@@ -2,9 +2,20 @@ import librosa
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
+import os
+import sys
+import logging
 from tqdm import tqdm
 
 from trainer.base_trainer import BaseTrainer
+
+logging.basicConfig(
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    level=os.environ.get("LOGLEVEL", "INFO").upper(),
+    stream=sys.stdout,
+)
+logger = logging.getLogger(__file__.split('/')[-1]+':'+__name__)
 
 plt.switch_backend('agg')
 
@@ -32,7 +43,7 @@ class Trainer(BaseTrainer):
             loss_total += loss.item()
 
         self.writer.add_scalar(f"Loss/Train", loss_total / len(self.train_dataloader), epoch)
-
+        logger.info("Loss/Train:{}".format(loss_total / len(self.train_dataloader)))
     @torch.no_grad()
     def _validation_epoch(self, epoch):
         noisy_list = []

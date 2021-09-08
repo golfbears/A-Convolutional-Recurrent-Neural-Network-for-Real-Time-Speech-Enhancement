@@ -1,6 +1,7 @@
 import argparse
 import os
-
+import sys
+import logging
 import json5
 import numpy as np
 import torch
@@ -9,6 +10,14 @@ from torch.utils.data import DataLoader
 
 from util.utils import initialize_config
 
+logging.basicConfig(
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    level=os.environ.get("LOGLEVEL", "INFO").upper(),
+    stream=sys.stdout,
+)
+
+logger = logging.getLogger(__file__.split('/')[-1]+':'+__name__)
 
 def main(config, resume):
     # Random seed for both CPU and GPU.
@@ -55,7 +64,10 @@ def main(config, resume):
     )
 
     model = initialize_config(config["model"])
-
+    params = list(model.parameters())
+    logger.info("models layers:{}".format(len(params)))
+    for name, parameters in model.named_parameters():
+        logger.info("{}:{}".format(name,parameters.size()))
     optimizer = torch.optim.Adam(
         params=model.parameters(),
         lr=config["optimizer"]["lr"],

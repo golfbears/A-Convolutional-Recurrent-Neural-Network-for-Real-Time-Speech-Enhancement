@@ -27,11 +27,14 @@ class Dataset(data.Dataset):
         super(Dataset, self).__init__()
         self.sr = sr
         self.train = train
-
-        dataset_list = [line.rstrip('\n') for line in open(os.path.abspath(os.path.expanduser(dataset_list)), "r")]
-        dataset_list = dataset_list[offset:]
-        if limit:
-            dataset_list = dataset_list[:limit]
+        dataset_lists = dataset_list.split(';')
+        total_list = []
+        for dataset_list in dataset_lists:
+            dataset_list = [line.rstrip('\n') for line in open(os.path.abspath(os.path.expanduser(dataset_list)), "r")]
+            dataset_list = dataset_list[offset:]
+            if limit:
+                dataset_list = dataset_list[:limit]
+            total_list += dataset_list
 
         self.dataset_list = dataset_list
         self.length = len(self.dataset_list)
